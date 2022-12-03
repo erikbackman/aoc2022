@@ -2,14 +2,15 @@ module Main where
 
 import Data.List
 import Data.Monoid
+import Data.Char
 import Control.Monad
 import Control.Arrow
 
 prio :: Char -> Int
-prio c | n >= 97 && n <= 122 = (n - fromEnum 'a') + 1
-       | n >= 65 && n <= 90 = (n - fromEnum 'A') + 27
+prio c | n >= 97 && n <= 122 = (n - ord 'a') + 1
+       | n >= 65 && n <= 90 = (n - ord 'A') + 27
        | otherwise = 0
-       where n = fromEnum c
+       where n = ord c
 
 part1 :: String -> Int
 part1 s = getSum . foldMap (Sum . prio) $ (nub . dupes) =<< lines s

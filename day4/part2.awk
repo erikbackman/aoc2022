@@ -13,5 +13,5 @@ match($0, /([0-9]+)-([0-9]+),([0-9]+)-([0-9]+)/, m) {
 	    break;
 	}
     }
-    if (intersect == 2) s++
+    s += (intersect == 2)
 } END { print s }

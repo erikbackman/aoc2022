@@ -10,8 +10,8 @@ part1 = solve (move reverse)
 part2 = solve (move id)
 
 solve :: Mover -> String -> Maybe String
-solve mover str = applyMoves <$> parse str
-  where applyMoves (crates,moves) = topCrates $ foldl mover crates moves
+solve mover str = topCrates . applyMoves <$> parse str
+  where applyMoves (crates,moves) = foldl mover crates moves
         topCrates = fmap head . M.elems
 
 type Mover = (IntMap [Char] -> Move -> IntMap [Char])
@@ -24,11 +24,10 @@ parse str = do
   pure (mkStacks crateLines, moves)
       where
         mkStacks xs = M.fromList (zip [1..] (parseCrates xs))
-        splitInput txt = fmap (flip splitAt txt) (findIndex (isPrefixOf "move") txt)
-        parseCrates inp = filter (not . null) $ fmap (filter (isAlpha)) (transpose inp)
+        splitInput txt = flip splitAt txt <$> findIndex (isPrefixOf "move") txt
+        parseCrates inp = filter (not . null) $ filter (isAlpha) <$> transpose inp
         parseMove str = let [a,b,c] = filter (all isNumber) (words str) in 
                         Move <$> readMaybe a <*> readMaybe b <*> readMaybe c 
-
 
 popn :: Int -> [a] -> Maybe ([a], [a])
 popn n xs = if length xs >= n then Just (splitAt n xs) else Nothing

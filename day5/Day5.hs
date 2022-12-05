@@ -17,19 +17,18 @@ solve mover str = applyMoves <$> parse str
 type Mover = (IntMap [Char] -> Move -> IntMap [Char])
 data Move = Move { count :: Int, from :: Int, to :: Int } deriving Show
 
-parseCrates inp = filter (not . null) $ fmap (filter (isAlpha)) (transpose inp)
-mkStacks xs = M.fromList (zip [1..] (parseCrates xs))
-splitInput txt = fmap (flip splitAt txt) (findIndex (isPrefixOf "move") txt)
-
-parseMove :: String -> Maybe Move
-parseMove str = let [a,b,c] = filter (all isNumber) (words str) in 
-                Move <$> readMaybe a <*> readMaybe b <*> readMaybe c 
-                
 parse :: String -> Maybe (IntMap [Char], [Move])
 parse str = do
   (crateLines, instructions) <- splitInput (lines str)
   moves <- traverse parseMove instructions
   pure (mkStacks crateLines, moves)
+      where
+        mkStacks xs = M.fromList (zip [1..] (parseCrates xs))
+        splitInput txt = fmap (flip splitAt txt) (findIndex (isPrefixOf "move") txt)
+        parseCrates inp = filter (not . null) $ fmap (filter (isAlpha)) (transpose inp)
+        parseMove str = let [a,b,c] = filter (all isNumber) (words str) in 
+                        Move <$> readMaybe a <*> readMaybe b <*> readMaybe c 
+
 
 popn :: Int -> [a] -> Maybe ([a], [a])
 popn n xs = if length xs >= n then Just (splitAt n xs) else Nothing

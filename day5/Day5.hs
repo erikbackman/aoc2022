@@ -46,7 +46,3 @@ pushTo cs i m = M.adjust (\s -> cs <> s) i m
 move :: ([Char] -> [Char]) -> IntMap [Char] -> Move -> IntMap [Char]
 move order m (Move cnt f t) = 
     maybe m (\(popd, upd) -> pushTo (order popd) t upd) (popnAt cnt f m)
-
-
-
-

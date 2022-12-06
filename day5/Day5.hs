@@ -25,7 +25,7 @@ parse str = do
       where
         mkStacks xs = M.fromList (zip [1..] (parseCrates xs))
         splitInput txt = flip splitAt txt <$> findIndex (isPrefixOf "move") txt
-        parseCrates inp = filter (not . null) $ filter (isAlpha) <$> transpose inp
+        parseCrates inp = filter (not . null) $ filter isAlpha <$> transpose inp
         parseMove str = let [a,b,c] = filter (all isNumber) (words str) in 
                         Move <$> readMaybe a <*> readMaybe b <*> readMaybe c 
 

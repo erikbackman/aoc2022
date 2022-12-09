@@ -3,6 +3,7 @@ module Day8 where
 import qualified Data.Matrix as M
 import Data.Matrix (Matrix)
 import Linear (V2(..))
+import Data.Ord (comparing)
 
 innerPoints m = [ V2 x y | x <- [2 .. M.ncols m - 1], y <- [2 .. M.nrows m - 1] ]
 getAt m (V2 x y) = M.safeGet y x m 
@@ -10,7 +11,7 @@ getAt m (V2 x y) = M.safeGet y x m
 -- from a starting point, look in a direction and return the ordering in that path
 lookInDir :: Matrix Char -> V2 Int -> V2 Int -> [Ordering]
 lookInDir m start dir = tail $ scanl f EQ path
-    where f _ xy = getAt m xy `compare` getAt m start
+    where f _ xy = comparing (getAt m) xy start
           path = takeWhile (not . null . getAt m) $ iterate (+dir) (start+dir)
 
 takeWhileInclusive :: (a -> Bool) -> [a] -> [a]

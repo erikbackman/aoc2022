@@ -36,6 +36,6 @@ part1 = nvisible . parseForest
 
 --- part2
 scenicScore :: Matrix Char -> V2 Int -> Int
-scenicScore m p = product $ length . (takeWhileInclusive (== LT)) <$> look m p
+scenicScore m p = product $ length . takeWhileInclusive (== LT) <$> look m p
 
 part2 = maximum . (\m -> fmap (scenicScore m) (innerPoints m)) . parseForest

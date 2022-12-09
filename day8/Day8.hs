@@ -11,7 +11,7 @@ getAt m (V2 x y) = M.safeGet y x m
 lookInDir :: Matrix Char -> V2 Int -> V2 Int -> [Ordering]
 lookInDir m start dir = tail $ scanl f EQ path
     where f _ xy = getAt m xy `compare` getAt m start
-          path = takeWhile (not . null . getAt m) $ tail $ iterate (+dir) start
+          path = takeWhile (not . null . getAt m) $ iterate (+dir) (start+dir)
 
 takeWhileInclusive :: (a -> Bool) -> [a] -> [a]
 takeWhileInclusive f = (\(a,b) -> a ++ foldr (const . pure) [] b) . span f
@@ -37,5 +37,4 @@ part1 = nvisible . parseForest
 scenicScore :: Matrix Char -> V2 Int -> Int
 scenicScore m p = product $ length . (takeWhileInclusive (== LT)) <$> look m p
 
---part2 :: String -> Int
 part2 = maximum . (\m -> fmap (scenicScore m) (innerPoints m)) . parseForest

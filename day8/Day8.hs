@@ -2,37 +2,40 @@ module Day8 where
 
 import qualified Data.Matrix as M
 import Data.Matrix (Matrix)
+import Linear (V2(..))
 
-data Dir = N | E | W | S
-         deriving (Eq, Show, Enum)
+innerPoints m = [ V2 x y | x <- [2 .. M.ncols m - 1], y <- [2 .. M.nrows m - 1] ]
+getAt m (V2 x y) = M.safeGet y x m 
 
-nextPos :: Dir -> (Int, Int) -> (Int, Int)
-nextPos dir (x,y) = case dir of
-                   N -> (x, y+1)
-                   S -> (x,y-1)
-                   W -> (x-1,y)
-                   E -> (x+1,y)
+-- from a starting point, look in a direction and return the ordering in that path
+lookInDir :: Matrix Char -> V2 Int -> V2 Int -> [Ordering]
+lookInDir m start dir = tail $ scanl f EQ path
+    where f _ xy = getAt m xy `compare` getAt m start
+          path = takeWhile (not . null . getAt m) $ tail $ iterate (+dir) start
 
-getAt m (x,y) = M.safeGet y x m
+takeWhileInclusive :: (a -> Bool) -> [a] -> [a]
+takeWhileInclusive f = (\(a,b) -> a ++ foldr (const . pure) [] b) . span f
 
--- given a point and a direction, try to look in the given direction
-canSeeOutDir :: Matrix Char -> (Int, Int) -> Dir -> Bool
-canSeeOutDir m start@(x,y) dir = all shorter inPath
-    where
-      shorter x = getAt m x < getAt m start
-      inPath = takeWhile (not . null . getAt m) $ tail $ iterate (nextPos dir) start
+-- look in every direction and return their ordering.
+look :: Matrix Char -> V2 Int -> [[Ordering]]
+look m p = lookInDir m p <$> [i, -i, j, -j]
+    where i = V2 1 0; j = V2 0 (-1)
 
--- given a point, try to look in every direction
-canSeeOut :: (Int, Int) -> Matrix Char -> Bool
-canSeeOut p m = any (canSeeOutDir m p) [N, S, E, W]
+parseForest = M.fromLists . lines
 
-innerPoints :: Matrix a -> [(Int, Int)]
-innerPoints m = [ (x,y) | x <- [2 .. M.ncols m - 1], y <- [2 .. M.nrows m - 1] ]
+-- part1
+canSeeOut :: Matrix Char -> V2 Int -> Bool
+canSeeOut m p = any (all (== LT)) (look m p)
 
 nvisible :: Matrix Char -> Int
-nvisible m = 4*(M.nrows m) - 4 + foldr f 0 (innerPoints m)
-             where f p s = if canSeeOut p m then s+1 else s
+nvisible m = 4*M.nrows m - 4 + foldr f 0 (innerPoints m)
+    where f p s = s+fromEnum (canSeeOut m p)
 
-part1 :: String -> Int
-part1 = nvisible . M.fromLists . lines
+part1 = nvisible . parseForest
 
+--- part2
+scenicScore :: Matrix Char -> V2 Int -> Int
+scenicScore m p = product $ length . (takeWhileInclusive (== LT)) <$> look m p
+
+--part2 :: String -> Int
+part2 = maximum . (\m -> fmap (scenicScore m) (innerPoints m)) . parseForest

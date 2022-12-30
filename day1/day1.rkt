@@ -3,7 +3,7 @@
 (require racket/match)
 (require racket/function)
 
-(define (most-kcal l) (apply max l))
+(define (most-kcal l) (apply max (hash-values l)))
 (define (add n) (curry + n))
 
 ;;; part1
@@ -11,7 +11,7 @@
   (λ ()
     (for/foldr ([bags (hash)]
                 [elf 1]
-                #:result (most-kcal (hash-values bags)))
+                #:result (most-kcal bags))
                ([l (in-lines)])
       (match l
         [(regexp #rx"^$") (values bags (add1 elf))]

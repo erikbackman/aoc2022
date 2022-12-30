@@ -6,19 +6,20 @@
 
 (define (add n) (curry + n))
 
-(define (solve f)
+(define (parse-bags)
  (with-input-from-file "input.txt"
    (λ ()
      (for/foldr ([bags (hash)]
                  [elf 1]
-                 #:result (f bags))
+                 #:result bags)
                 ([l (in-lines)])
        (match l
          [(regexp #rx"^$") (values bags (add1 elf))]
          [_ (let ([n (string->number l)])
               (values (hash-update bags elf (add n) 0) elf))])))))
 
-(let ([part1 (solve (λ (l) (apply max (hash-values l))))]
-      [part2 (solve (λ (l) (apply + (take (sort (hash-values l) >) 3))))])
+(let* ([bags (parse-bags)]
+       [part1 (apply max (hash-values bags))]
+       [part2 (apply + (take (sort (hash-values bags) >) 3))])
   (printf "part1: ~s\npart2: ~s" part1 part2))
 

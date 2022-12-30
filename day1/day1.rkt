@@ -7,19 +7,19 @@
 
 (define (add n) (curry + n))
 
-(define (parse-bags)
+(define (parse-kcals)
  (with-input-from-file "input.txt"
    (λ ()
-     (for/foldr ([bags (hash)]
+     (for/foldr ([kcals (hash)]
                  [elf 1]
-                 #:result (hash-values bags))
+                 #:result (hash-values kcals))
                 ([l (in-lines)])
        (match l
-         [(regexp #rx"^$") (values bags (add1 elf))]
+         [(regexp #rx"^$") (values kcals (add1 elf))]
          [_ (let ([n (string->number l)])
-              (values (hash-update bags elf (add n) 0) elf))])))))
+              (values (hash-update kcals elf (add n) 0) elf))])))))
 
-(let* ([bags (parse-bags)]
-       [part1 (~>> bags (apply max))]
-       [part2 (~>  bags (sort >) (take 3) (apply + _))])
+(let* ([kcals (parse-kcals)]
+       [part1 (~>> kcals (apply max))]
+       [part2 (~>  kcals (sort >) (take 3) (apply + _))])
   (printf "part1: ~s\npart2: ~s" part1 part2))

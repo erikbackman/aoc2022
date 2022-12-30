@@ -4,16 +4,17 @@
 (require racket/function)
 
 (define (most-kcal l) (apply max l))
+(define (add n) (curry + n))
 
 ;;; part1
 (with-input-from-file "input.txt"
   (λ ()
-    (for/foldr ([acc (hash)]
+    (for/foldr ([bags (hash)]
                 [elf 1]
-                #:result (most-kcal (hash-values acc)))
+                #:result (most-kcal (hash-values bags)))
                ([l (in-lines)])
       (match l
-        [(regexp #rx"^$") (values acc (add1 elf))]
+        [(regexp #rx"^$") (values bags (add1 elf))]
         [_
          (let ([n (string->number l)])
-           (values (hash-update acc elf (curry + n) 0) elf))]))))
+           (values (hash-update bags elf (add n) 0) elf))]))))

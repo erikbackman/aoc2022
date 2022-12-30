@@ -12,14 +12,14 @@
    (λ ()
      (for/foldr ([bags (hash)]
                  [elf 1]
-                 #:result bags)
+                 #:result (hash-values bags))
                 ([l (in-lines)])
        (match l
          [(regexp #rx"^$") (values bags (add1 elf))]
          [_ (let ([n (string->number l)])
               (values (hash-update bags elf (add n) 0) elf))])))))
 
-(let* ([bags (hash-values (parse-bags))]
+(let* ([bags (parse-bags)]
        [part1 (~>> bags (apply max))]
        [part2 (~>  bags (sort >) (take 3) (apply + _))])
   (printf "part1: ~s\npart2: ~s" part1 part2))

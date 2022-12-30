@@ -18,8 +18,7 @@
          [_ (let ([n (string->number l)])
               (values (hash-update bags elf (add n) 0) elf))])))))
 
-(define (part1) (solve (λ (l) (apply max (hash-values l)))))
-(define (part2) (solve (λ (l) (apply + (take (sort (hash-values l) >) 3)))))
-
-(printf "part1: ~s\npart2: ~s" (part1) (part2))
+(let ([part1 (solve (λ (l) (apply max (hash-values l))))]
+      [part2 (solve (λ (l) (apply + (take (sort (hash-values l) >) 3))))])
+  (printf "part1: ~s\npart2: ~s" part1 part2))
 

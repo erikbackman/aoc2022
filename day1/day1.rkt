@@ -15,6 +15,5 @@
                ([l (in-lines)])
       (match l
         [(regexp #rx"^$") (values bags (add1 elf))]
-        [_
-         (let ([n (string->number l)])
-           (values (hash-update bags elf (add n) 0) elf))]))))
+        [_ (let ([n (string->number l)])
+             (values (hash-update bags elf (add n) 0) elf))]))))
